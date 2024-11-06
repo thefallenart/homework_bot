@@ -6,7 +6,6 @@ from http import HTTPStatus
 from typing import Dict, List, Union
 
 import requests
-import telegram
 import telebot
 
 from dotenv import load_dotenv
@@ -36,7 +35,7 @@ def check_tokens() -> bool:
     return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 
-def send_message(bot: telegram.Bot, message: str):
+def send_message(bot: telebot.TeleBot, message: str):
     """Sends a message to Telegram."""
     try:
         logging.error('Начинаем отправку сообщения!')
@@ -45,7 +44,7 @@ def send_message(bot: telegram.Bot, message: str):
             text=message
         )
         logging.debug('Сообщение успешно отправлено в Telegram')
-    except telegram.error.TelegramError as e:
+    except telebot.apihelper.ApiException as e:
         raise TelegramError("Ошибка отправки сообщения в Telegram.") from e
 
 
