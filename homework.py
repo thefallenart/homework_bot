@@ -10,7 +10,7 @@ import telegram
 import telebot
 
 from dotenv import load_dotenv
-from exceptions import HTTPError, EndpointError
+from exceptions import HTTPError, EndpointError, TelegramError
 
 
 load_dotenv()
@@ -29,18 +29,6 @@ HOMEWORK_VERDICTS = {
     'reviewing': 'Работа взята на проверку ревьюером.',
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    filename='program.log',
-    filemode='w',
-    format='%(asctime)s - %(levelname)s - %(message)s - %(name)s'
-)
-logger = logging.getLogger(__name__)
-logger.addHandler(
-    logging.StreamHandler()
-)
-
 
 def check_tokens() -> bool:
     """Функция проверки доступности переменных окружения."""
