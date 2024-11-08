@@ -88,7 +88,7 @@ def check_response(response: Dict[str, Union[str, str]]) \
         raise TypeError("homeworks не словарь")
     if "homeworks" not in response:
         raise KeyError("В ответе API нет ключа homeworks")
-    homeworks = response["homeworks"]  # Вынесли в переменную
+    homeworks = response["homeworks"]
     if not isinstance(homeworks, list):
         raise TypeError("Ключ homeworks не список")
     if "current_date" not in response:
