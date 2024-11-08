@@ -30,8 +30,8 @@ HOMEWORK_VERDICTS = {
 }
 
 
-def check_tokens() -> bool:
-    """Функция проверки доступности переменных окружения."""
+def check_tokens() -> bool: 
+    """Функция проверки доступности переменных окружения.""" 
     return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 
@@ -44,7 +44,10 @@ def send_message(bot: telebot.TeleBot, message: str):
             text=message
         )
         logging.debug('Сообщение успешно отправлено в Telegram')
-    except telebot.apihelper.ApiException as e:
+    except (
+        telebot.apihelper.ApiException,
+        requests.exceptions.RequestException
+    ) as e:
         raise TelegramError("Ошибка отправки сообщения в Telegram.") from e
 
 
@@ -56,14 +59,10 @@ def get_api_answer(timestamp: int) -> Dict[str, Union[str, str]]:
     params_api = {'url': ENDPOINT, 'headers': HEADERS, 'params': payload}
     try:
         response = requests.get(**params_api)
-    except Exception as error:
-        raise EndpointError('Ошибка в запросе к API {error} с параметрами: '
-                            '{url}, {headers}, {params}'
-                            .format(**params_api, error=error))
+    except requests.exceptions.RequestException as error:
+        raise EndpointError(f'Ошибка в запросе к API: {error}')
     if response.status_code != HTTPStatus.OK:
-        raise HTTPError('Ошибка соединения: {status}, {text}'.format(
-            status=response.status_code,
-            text=response.text))
+        raise HTTPError(f'Ошибка соединения: {response.status_code}, {response.text}')
     return response.json()
 
 
@@ -74,11 +73,12 @@ def check_response(response: Dict[str, Union[str, str]]) \
         raise TypeError("homeworks не словарь")
     if "homeworks" not in response:
         raise KeyError("В ответе API нет ключа homeworks")
-    if not isinstance(response["homeworks"], list):
+    homeworks = response["homeworks"]  # Вынесли в переменную
+    if not isinstance(homeworks, list):
         raise TypeError("Ключ homeworks не список")
     if "current_date" not in response:
         raise KeyError("Ключ current_date пустой")
-    return response["homeworks"]
+    return homeworks
 
 
 def parse_status(homework: Dict[str, Union[str, str]]) \
@@ -87,13 +87,13 @@ def parse_status(homework: Dict[str, Union[str, str]]) \
     logging.info("Старт проверки статусов ДЗ")
     if "homework_name" not in homework:
         raise KeyError("В ответе отсутствует ключ homework_name")
-    homework_name = homework.get("homework_name")
-    status = homework.get("status")
-    if not status:
+    homework_name = homework["homework_name"] 
+    if "status" not in homework:
         raise KeyError("В ответе отсутствует ключ status")
+    status = homework["status"] 
     if status not in (HOMEWORK_VERDICTS):
         raise ValueError(f"Неизвестный статус работы - {status}")
-    verdict = HOMEWORK_VERDICTS[homework.get("status")]
+    verdict = HOMEWORK_VERDICTS[status]
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
 
