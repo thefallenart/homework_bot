@@ -30,9 +30,20 @@ HOMEWORK_VERDICTS = {
 }
 
 
-def check_tokens() -> bool: 
-    """Функция проверки доступности переменных окружения.""" 
-    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
+def check_tokens() -> bool:
+    """Функция проверки доступности переменных окружения."""
+    missing_tokens = []
+    if not PRACTICUM_TOKEN:
+        missing_tokens.append('PRACTICUM_TOKEN')
+    if not TELEGRAM_TOKEN:
+        missing_tokens.append('TELEGRAM_TOKEN')
+    if not TELEGRAM_CHAT_ID:
+        missing_tokens.append('TELEGRAM_CHAT_ID')
+    if missing_tokens:
+        logging.critical(f'Отсутствуют переменные окружения: '
+                         f'{", ".join(missing_tokens)}')
+        return False
+    return True
 
 
 def send_message(bot: telebot.TeleBot, message: str):
