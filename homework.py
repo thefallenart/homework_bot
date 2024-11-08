@@ -74,7 +74,10 @@ def get_api_answer(timestamp: int) -> Dict[str, Union[str, str]]:
     except requests.exceptions.RequestException as error:
         raise EndpointError(f'Ошибка в запросе к API: {error}')
     if response.status_code != HTTPStatus.OK:
-        raise HTTPError(f'Ошибка соединения: {response.status_code}, {response.text}')
+        raise HTTPError(
+            f'Ошибка соединения: {response.status_code}, '
+            f'{response.text}'
+        )
     return response.json()
 
 
@@ -99,10 +102,10 @@ def parse_status(homework: Dict[str, Union[str, str]]) \
     logging.info("Старт проверки статусов ДЗ")
     if "homework_name" not in homework:
         raise KeyError("В ответе отсутствует ключ homework_name")
-    homework_name = homework["homework_name"] 
+    homework_name = homework["homework_name"]
     if "status" not in homework:
         raise KeyError("В ответе отсутствует ключ status")
-    status = homework["status"] 
+    status = homework["status"]
     if status not in (HOMEWORK_VERDICTS):
         raise ValueError(f"Неизвестный статус работы - {status}")
     verdict = HOMEWORK_VERDICTS[status]
