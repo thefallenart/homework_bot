@@ -49,7 +49,7 @@ def check_tokens() -> bool:
 def send_message(bot: telebot.TeleBot, message: str):
     """Sends a message to Telegram."""
     try:
-        logging.error('Начинаем отправку сообщения!')
+        logging.info('Начинаем отправку сообщения!')
         bot.send_message(
             chat_id=TELEGRAM_CHAT_ID,
             text=message
@@ -59,6 +59,7 @@ def send_message(bot: telebot.TeleBot, message: str):
         telebot.apihelper.ApiException,
         requests.exceptions.RequestException
     ) as e:
+        logging.error("Ошибка отправки сообщения в Telegram.", exc_info=True)
         raise TelegramError("Ошибка отправки сообщения в Telegram.") from e
 
 
