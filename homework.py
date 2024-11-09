@@ -43,7 +43,7 @@ def check_tokens() -> bool:
             missing_tokens.append(token_name)
 
     if missing_tokens:
-        logging.critical(f'Отсутствуют переменные окружения: ' 
+        logging.critical(f'Отсутствуют переменные окружения: '
                          f'{", ".join(missing_tokens)}')
         return False
     return True
