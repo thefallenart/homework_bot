@@ -33,14 +33,17 @@ HOMEWORK_VERDICTS = {
 def check_tokens() -> bool:
     """Функция проверки доступности переменных окружения."""
     missing_tokens = []
-    if not PRACTICUM_TOKEN:
-        missing_tokens.append('PRACTICUM_TOKEN')
-    if not TELEGRAM_TOKEN:
-        missing_tokens.append('TELEGRAM_TOKEN')
-    if not TELEGRAM_CHAT_ID:
-        missing_tokens.append('TELEGRAM_CHAT_ID')
+    tokens = (
+        (PRACTICUM_TOKEN, 'PRACTICUM_TOKEN'),
+        (TELEGRAM_TOKEN, 'TELEGRAM_TOKEN'),
+        (TELEGRAM_CHAT_ID, 'TELEGRAM_CHAT_ID'),
+    )
+    for token, token_name in tokens:
+        if not token:
+            missing_tokens.append(token_name)
+
     if missing_tokens:
-        logging.critical(f'Отсутствуют переменные окружения: '
+        logging.critical(f'Отсутствуют переменные окружения: ' 
                          f'{", ".join(missing_tokens)}')
         return False
     return True
@@ -91,8 +94,6 @@ def check_response(response: Dict[str, Union[str, str]]) \
     homeworks = response["homeworks"]
     if not isinstance(homeworks, list):
         raise TypeError("Ключ homeworks не список")
-    if "current_date" not in response:
-        raise KeyError("Ключ current_date пустой")
     return homeworks
 
 
@@ -106,7 +107,7 @@ def parse_status(homework: Dict[str, Union[str, str]]) \
     if "status" not in homework:
         raise KeyError("В ответе отсутствует ключ status")
     status = homework["status"]
-    if status not in (HOMEWORK_VERDICTS):
+    if status not in HOMEWORK_VERDICTS:
         raise ValueError(f"Неизвестный статус работы - {status}")
     verdict = HOMEWORK_VERDICTS[status]
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
